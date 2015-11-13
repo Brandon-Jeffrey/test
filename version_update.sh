@@ -1,18 +1,26 @@
 #!/bin/bash
 
-excluded=($(<excluded_files.txt))
+excluded=$(<excluded_files.txt)
 
-
+tempfile="temp.tmp.$$"
 
 ls | while read filename ; do
 
+case "$excluded" in
 
+*"$filename"* );;
+*)
 
-if ! [[ " ${excluded[@]} " =~ " $filename " ]] ; then
+#if ! (( $( grep -c "$filename" "$excluded" ) )) ; then
 
-sed "s/#version[^\n]*/#version `echo $1`/g" `echo $filename`
+sed "s/#version[^\n]*/#version `echo $1`/g" "$filename" > $tempfile
+mv $tempfile "$filename"
+#echo $filename 
+;;
 
-fi
+esac
+#fi
+rm -f $tempfile
 
 done
 
